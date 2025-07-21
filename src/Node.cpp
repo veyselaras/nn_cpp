@@ -5,6 +5,8 @@
 class Node{
 public:
 
+	double *weights;
+
 	void setInput(const double input, bool c = 0){
 		this->input = input;
 		if(!c){// if c equals to 0 this node is a hiden layer neuron else may be input or output layer
@@ -23,15 +25,19 @@ public:
 		return output;
 	}
 	
-	double* getWeight(){
-		return weights;
+	void setBias(double output){
+		this->output = output;
+	}
+	
+	double getBias(){
+		return output;
 	}
 
 private:
 	
 	double input;
 	double output;
-	double *weights;
+	double bias;
 	
 	Calculations calculator;
 	
