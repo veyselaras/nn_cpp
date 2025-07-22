@@ -1,16 +1,50 @@
 #include <iostream>
 #include "Node.h"
 #include "Calculations.h"
+#include "NNParams.h"
+
 
 class Node{
+private:
+	
+	double input;
+	double output;
+	double bias = 0;
+	
+	Calculations calculator;
+
 public:
 
-	double *weights;
-
-	void setInput(const double input, bool c = 0){
+	std::vector<double> weights;
+	
+	Node(const int neuronNumber){
+		switch(neuronNumber){
+			case NNParams::INPUT:
+				weights.resize(NNParams::H1);
+				randomValueGenerator(weights);
+				break;
+			case NNParams::H1:
+				weights.resize(NNParams::H2);
+				randomValueGenerator(weights);
+				break;
+			case NNParams::H2:
+				weights.resize(NNParams::OUTPUT);
+				randomValueGenerator(weights);
+				break;
+			case NNParams::OUTPUT:
+				break;
+			default:
+				std::cout<<"HATA WEIGHTS OLUSAMADI"<<endl;
+				break;
+		}
+	}	
+	
+	void setInput(const double input, const int neuronNumber){
 		this->input = input;
-		if(!c){// if c equals to 0 this node is a hiden layer neuron else may be input or output layer
+		if(neuronNumber == 100 || neuronNumber == 300){
 			output = calculator.reluFunc(this->input);
+			
+		}
 	}
 	
 	double getInput(){
@@ -32,13 +66,4 @@ public:
 	double getBias(){
 		return output;
 	}
-
-private:
-	
-	double input;
-	double output;
-	double bias;
-	
-	Calculations calculator;
-	
 };
