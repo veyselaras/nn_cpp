@@ -14,8 +14,4 @@ public:
 		convolution(hidden2, outputLayer);
 	}
 
-private:
-
-
-
 };

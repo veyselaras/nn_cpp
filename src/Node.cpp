@@ -17,42 +17,46 @@ public:
 
 	std::vector<double> weights;
 	
-	Node(const int neuronNumber){
-		switch(neuronNumber){
-			case NNParams::INPUT:
-				weights.resize(NNParams::H1);
-				randomValueGenerator(weights);
+	Node(int layerSize = 0)
+	{
+		std::size_t fanOut = 0;
+	
+		switch (layerSize)
+		{
+			case NNParams::INPUT:  
+				fanOut = NNParams::H1;
 				break;
-			case NNParams::H1:
-				weights.resize(NNParams::H2);
-				randomValueGenerator(weights);
+			case NNParams::H1:     
+				fanOut = NNParams::H2;
 				break;
-			case NNParams::H2:
-				weights.resize(NNParams::OUTPUT);
-				randomValueGenerator(weights);
+			case NNParams::H2:     
+				fanOut = NNParams::OUTPUT;
 				break;
-			case NNParams::OUTPUT:
+			case NNParams::OUTPUT: 
+				fanOut = 0;
 				break;
 			default:
-				std::cout<<"HATA WEIGHTS OLUSAMADI"<<endl;
+				std::cout<<"DEFATULT DEGER"<<endl;
 				break;
 		}
-	}	
 	
+		weights.resize(fanOut);
+		if (fanOut > 0) 
+			calculator.randomValueGenerator(weights);
+	}
+
+
 	void setInput(const double input, const int neuronNumber){
 		this->input = input;
-		if(neuronNumber == 100 || neuronNumber == 300){
+		if(neuronNumber == 100 || neuronNumber == 300)
 			output = calculator.reluFunc(this->input);
-			
-		}
+		else if(neuronNumber == 784)
+			output = input;
+		
 	}
 	
 	double getInput(){
 		return input;
-	}
-	
-	void setOutput(double output){
-		this->output = output;
 	}
 	
 	double getOutput(){
