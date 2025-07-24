@@ -7,7 +7,7 @@
 class Node{
 private:
 	
-	double input;
+	unsigned char input;
 	double output;
 	double bias = 0;
 	
@@ -46,16 +46,15 @@ public:
 	}
 
 
-	void setInput(const double input, const int neuronNumber){
+	void setInput(const unsigned char input, const size_t neuronNumber){
 		this->input = input;
 		if(neuronNumber == 100 || neuronNumber == 300)
 			output = calculator.reluFunc(this->input);
 		else if(neuronNumber == 784)
 			output = input;
-		
 	}
 	
-	double getInput(){
+	unsigned char getInput(){
 		return input;
 	}
 	
