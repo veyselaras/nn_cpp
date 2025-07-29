@@ -42,16 +42,14 @@ public:
 	void trainTheNetwork(){
 		std::string trainFilename = "../t10k-images.idx3-ubyte";
 		std::string trainLabelFilename = "../t10k-labels.idx1-ubyte";
-		std::string testFilename = "../train-images.idx3-ubyte";
-		std::string testLabelFilename = "../train-labels.idx1-ubyte";
 		
-		std::ifstream trainingFile(trainFilename, std::ifstream::binary);
-		std::ifstream trainingLabel(trainLabelFilename, std::ifstream::binary);
+		std::ifstream trainingFile(trainFilename, std::ios::binary);
+		std::ifstream trainingLabel(trainLabelFilename, std::ios::binary);
 		
-		if(trainingFile & trainingLabel)
+		if(trainingFile && trainingLabel)
 			std::cout << "training file is opened"<< std::endl;
 		else{
-			std::cout << "training file is opened"<< std::endl;
+			std::cout << "training file is not opened"<< std::endl;
 			return;
 		}
 		
@@ -60,10 +58,13 @@ public:
 		char numberOfRows[4];
 		char numberOfCols[4];
 		
-		file.read(magicNumber, 4);
-		file.read(numberOfImages, 4);
-		file.read(numberOfRows, 4);
-		file.read(numberOfCols, 4);
+		trainingFile.read(magicNumber, 4);
+		trainingFile.read(numberOfImages, 4);
+		trainingFile.read(numberOfRows, 4);
+		trainingFile.read(numberOfCols, 4);
+		
+		if(!trainingFile)
+			std::cout << "HATA1" << std::endl;
 		
 		int numImages = (static_cast<unsigned char>(numberOfImages[0]) << 24) | 
 							 (static_cast<unsigned char>(numberOfImages[1]) << 16) | 
@@ -80,13 +81,24 @@ public:
 						  (static_cast<unsigned char>(numberOfCols[2]) << 8) | 
 						  static_cast<unsigned char>(numberOfCols[3]);
 	
-		char magicNumber4Label[4]
+		char magicNumber4Label[4];
+		char numberOfLabels[4];
+		trainingLabel.read(magicNumber4Label, 4);
+		trainingLabel.read(numberOfLabels, 4);
+		
+		int numLabels = (static_cast<unsigned char>(numberOfLabels[0]) << 24) | 
+							 (static_cast<unsigned char>(numberOfLabels[1]) << 16) | 
+							 (static_cast<unsigned char>(numberOfLabels[2]) << 8) | 
+							  static_cast<unsigned char>(numberOfLabels[3]);
+		
+		if(numImages != numLabels)
+			std::cout << "HATA SAYILAR UYUSMUYOR" << std::endl;
 		
 		for(int i = 0; i < numImages; i++){
 			std::vector<unsigned char> imageBytes(numRows * numCols);
-			std::vector<unsigned char> labelByte;
-			file.read((char*)(imageBytes.data()), numRows * numCols);
-			file.read((char*)(labelByte.data()), 1);
+			std::vector<unsigned char> labelByte(1);
+			trainingFile.read((char*)(imageBytes.data()), numRows * numCols);
+			trainingLabel.read((char*)(labelByte.data()), 1);
 			
 			forwardProp.training(inputLayer,
 			                     hidden1Layer,
@@ -94,7 +106,7 @@ public:
 			                     outputLayer,
 										imageBytes,
 										numRows,
-										numCols)
+										numCols);
 			
 			backProp.backPropagation(	inputLayer,
 												hidden1Layer,

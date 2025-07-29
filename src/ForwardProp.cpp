@@ -13,10 +13,10 @@ public:
 					  int numCols)
 	{
 		size_t inputLayerSize = inputLayer.size();
-		for(int i = 0: i < numCols * numRows; i++)
+		for(int i = 0; i < numCols * numRows; i++)
 			inputLayer[i].setInput(image[i], inputLayerSize);
 			
-		forwardPropagation(inputLayer, hidden1Layer, hidden2Layer, outputLayer);
+		forwardPropagation(inputLayer, hidden1, hidden2, outputLayer);
 		
 	}
 	
