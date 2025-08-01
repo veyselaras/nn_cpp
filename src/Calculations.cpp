@@ -2,23 +2,27 @@
 #include <vector>
 #include "Calculations.h"
 #include "NNParams.h"
+#include "Node.h"
 #include <random>
+#include <cstdlib>
 
 class Calculations{
 private:
 	
 	std::mt19937 rng(std::random_device{}());
 	
-	
 public:
 	
-	randomValueGenerator(std::vector<double>& weights){
+	void randomValueGenerator(std::vector<double>& weights){
 		std::size_t lengthOfWeights = weights.size();
 		double sigma = std::sqrt(2.0/lengthOfWeights);
-		std::normal_distribution<double> N(0.0, sigma);
 		
-		for(double& x : weights)
-			x = N(rng);
+		for(double& x : weights) {
+			double u1 = static_cast<double>(rand()) / RAND_MAX;
+			double u2 = static_cast<double>(rand()) / RAND_MAX;
+			double z = std::sqrt(-2.0 * std::log(u1)) * std::cos(2.0 * 3.14159265359 * u2);
+			x = z * sigma;
+		}
 	}
 
 	double reluFunc(double input){
@@ -39,25 +43,28 @@ public:
 		}
 	}
 
-	double crossEntropy(double expectedValues, double calculatedValues){
-		std::vector<double> crossEntropyValues;
-		std::size_t vectorLength = expectedValues.size();
-		for(std::size_t i = 0; i < vectorLength; i++){
-			crossEntropyValues.push_back(-expectedValues[i] * log(calculatedValues[i] + 1e-15));
-			crossEntropyValues[i] = 
+	double crossEntropy(const std::vector<double>& calculatedValues,
+							  const std::vector<double>& expectedValues)
+	{
+		const double eps = 1e-15;
+		double loss = 0.0;
+
+		for (std::size_t i = 0; i < expectedValues.size(); ++i) {
+			double p = std::clamp(calculatedValues[i], eps, 1.0 - eps);
+			loss -= expectedValues[i] * std::log(p);
 		}
-		return crossEntropyValues;
+		return loss;
 	}
 
 	void softMax(std::vector<Node>& outputLayer){
-		std::size_t vectorLength = inputValues.size();
+		std::size_t vectorLength = outputLayer.size();
 		double sumOfInputValues = 0;
 		
 		for(std::size_t i = 0; i < vectorLength; i++)
-			sumOfInputValues += exp(outputLayer[i].input);
+			sumOfInputValues += exp(outputLayer[i].getOutput());
 		
 		for(std::size_t i = 0; i < vectorLength; i++)
-			outputLayer[i].setOutput(exp(inputValues[i])/sumOfInputValues);
+			outputLayer[i].setOutput(exp(outputLayer[i].getOutput())/sumOfInputValues);
 	}
 
 	void convolution(std::vector<Node>& inputLayer, std::vector<Node>& outputLayer){

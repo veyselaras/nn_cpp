@@ -40,8 +40,8 @@ public:
 	}
 	
 	void trainTheNetwork(){
-		std::string trainFilename = "../t10k-images.idx3-ubyte";
-		std::string trainLabelFilename = "../t10k-labels.idx1-ubyte";
+		std::string trainFilename = "../train-images.idx3-ubyte";
+		std::string trainLabelFilename = "../train-images.idx1-ubyte";
 		
 		std::ifstream trainingFile(trainFilename, std::ios::binary);
 		std::ifstream trainingLabel(trainLabelFilename, std::ios::binary);
@@ -53,12 +53,11 @@ public:
 			return;
 		}
 		
-		char magicNumber[4];
 		char numberOfImages[4];
 		char numberOfRows[4];
 		char numberOfCols[4];
 		
-		trainingFile.read(magicNumber, 4);
+		trainingFile.ignore(4);
 		trainingFile.read(numberOfImages, 4);
 		trainingFile.read(numberOfRows, 4);
 		trainingFile.read(numberOfCols, 4);
@@ -81,9 +80,8 @@ public:
 						  (static_cast<unsigned char>(numberOfCols[2]) << 8) | 
 						  static_cast<unsigned char>(numberOfCols[3]);
 	
-		char magicNumber4Label[4];
 		char numberOfLabels[4];
-		trainingLabel.read(magicNumber4Label, 4);
+		trainingLabel.ignore(4);
 		trainingLabel.read(numberOfLabels, 4);
 		
 		int numLabels = (static_cast<unsigned char>(numberOfLabels[0]) << 24) | 

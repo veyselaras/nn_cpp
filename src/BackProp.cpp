@@ -9,14 +9,15 @@ public:
 									std::vector<Node>& hidden1, 
 									std::vector<Node>& hidden2, 
 									std::vector<Node>& outputLayer, 
-									std::vector<unsigned char> labelByte){
+									unsigned char labelByte){
 		
 		double deltaOfOut[NNParams::OUTPUT];
 		double deltaOfH2[NNParams::H2];
 		double deltaOfH1[NNParams::H1];
 		
 		for(int i = 0; i < NNParams::OUTPUT; i++)
-			deltaOfOut[i] = outputLayer[i].getOutput() - static_cast<int>(labelByte[i]);
+			deltaOfOut[i] = outputLayer[i].getOutput() - (i == labelByte ? 1.0 : 0.0);
+		
 		
 		for(int j = 0; j < NNParams::H2; j++){
 			double sum = 0;

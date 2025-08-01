@@ -1,5 +1,6 @@
 #include "Forward.h"
 #include "Calculations.h"
+#include "NNParams.h"
 
 class ForwardProp{
 public:
@@ -12,9 +13,13 @@ public:
 					  int numRows,
 					  int numCols)
 	{
+		if (image.size() != NNParams::INPUT) 
+		{
+			std::cout<<"image.size() != NNParams::INPUT"<<std::endl;
+		}
 		size_t inputLayerSize = inputLayer.size();
-		for(int i = 0; i < numCols * numRows; i++)
-			inputLayer[i].setInput(image[i], inputLayerSize);
+		for(int i = 0; i < image.size(); i++)
+			inputLayer[i].setInput(image[i]/255.0, inputLayerSize);
 			
 		forwardPropagation(inputLayer, hidden1, hidden2, outputLayer);
 		
@@ -32,6 +37,8 @@ private:
 		calc.convolution(inputLayer, hidden1);
 		calc.convolution(hidden1, hidden2);
 		calc.convolution(hidden2, outputLayer);
+		
+		calc.softMax(outputLayer);
 	}
 	
 };
