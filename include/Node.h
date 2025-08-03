@@ -2,18 +2,21 @@
 #include <vector>
 
 class Node {
+private:
+    void randomValueGenerator(std::vector<double>& weights);
+
 public:
-    unsigned char input;
+    double input;
     double output;
-    double bias = 0;
+    double bias;
     std::vector<double> weights;
     
     Node(int layerSize = 0);
     
-    void setInput(const unsigned char input, const size_t neuronNumber);
-    unsigned char getInput();
+    void setInput(const double input, const int neuronNumber);
+    double getInput();
     double getOutput();
-    void setBias(double output);
+    void setBias(double bias);
     double getBias();
     void setOutput(double output);
 };

@@ -1,16 +1,17 @@
-#include "ForwardProp.h"
 #include "Test.h"
+#include <chrono>
 
-class Test{
-public:
+double Test::testTheNetwork(std::vector<Node>& inputLayer, 
+                         std::vector<Node>& hidden1, 
+                         std::vector<Node>& hidden2, 
+                         std::vector<Node>& outputLayer){
 
-	void testTheNetwork(std::vector<Node>& inputLayer, 
-							  std::vector<Node>& hidden1, 
-							  std::vector<Node>& hidden2, 
-							  std::vector<Node>& outputLayer){
-
-		std::string testFilename = "../t10k-images.idx3-ubyte";
-		std::string testLabelFilename = "../t10k-labels.idx1-ubyte";
+    // Start timing
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    ForwardProp forwardProp;
+    std::string testFilename = "./t10k-images.idx3-ubyte";
+		std::string testLabelFilename = "./t10k-labels.idx1-ubyte";
 		
 		std::ifstream testingFile(testFilename, std::ios::binary);
 		std::ifstream testingLabel(testLabelFilename, std::ios::binary);
@@ -19,7 +20,7 @@ public:
 			std::cout << "testing files is opened"<< std::endl;
 		else{
 			std::cout << "testing files is not opened"<< std::endl;
-			return;
+			return -1;
 		}
 		
 		char numberOfImages[4];
@@ -59,7 +60,7 @@ public:
 		
 		if(numLabels != numImages){
 			std::cout<<"numberOfLabels != numberOfImages"<<std::endl;
-			return;
+			return -1;
 		}
 		
 		int correct = 0;
@@ -79,21 +80,34 @@ public:
 			
 			int pred   = 0;                        // tahmin edilen sınıf
 			double maxP = outputLayer[0].getOutput();
-
+			std::cout << "maxP: " << maxP << std::endl;
 			for (int j = 1; j < NNParams::OUTPUT; ++j) {
 				 double p = outputLayer[j].getOutput();
+				 std::cout << "p: " << p << std::endl;
 				 if (p > maxP) {
 					  maxP = p;      // daha büyük olasılık
 					  pred = j;      // → onun indisi sınıf tahmini
 				 }
 			}
 			
-			if (pred == label) ++correct;
+			if (pred == static_cast<int>(label)) ++correct;
+			std::cout << "pred: " << pred << " label: " << static_cast<int>(label) << std::endl;
+
+			std::cout << "Accuracy: "
+          << 100.0 * correct / (i + 1) << "%\n";
 		}
 		testingFile.close();
 		testingLabel.close();
 		
 		std::cout << "Accuracy: "
           << 100.0 * correct / numImages << "%\n";
-	}
-};
+    
+    // End timing and calculate duration
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    
+    std::cout << "Testing completed in: " << duration.count() << " milliseconds" << std::endl;
+    std::cout << "Testing completed in: " << duration.count() / 1000.0 << " seconds" << std::endl;
+    
+    return static_cast<double>(duration.count());
+}
